@@ -3,11 +3,12 @@ class Vehicle {
   constructor(x, y, name, dna) {
     this.name = name;
     this.pos = createVector(x, y);
-    this.velocity = createVector(-2, 0);
+    this.velocity = createVector(0, 0);
     this.acceleration = createVector(0, 0);
-    this.r = 4;
-    this.maxSpeed = random(2, 5);
-    this.maxForce = random(0.2, 0.5);
+    this.r = random(2, 5);
+    this.maxSpeed = (1 / this.r) * 10;
+    this.maxForce = random(0.1, 0.3);
+    this.momentum = 1;
     this.health = 1;
     this.dna = [];
 
@@ -46,7 +47,7 @@ class Vehicle {
 
   update = function () {
     // Decrease the health
-    this.health -= 0.005;
+    this.health -= 0.01 * (1 / this.r);
 
     // Accelerate
     this.velocity.add(this.acceleration);
@@ -63,7 +64,7 @@ class Vehicle {
 
   behaviour = function (good, bad) {
     var steerG = this.eat(good, 0.2, this.dna[2]);
-    var steerB = this.eat(bad, -1, this.dna[3]);
+    var steerB = this.eat(bad, -0.8, this.dna[3]);
 
     steerG.mult(this.dna[0]);
     steerG.mult(this.dna[1]);
@@ -110,7 +111,9 @@ class Vehicle {
   };
 
   applyForce = function (force) {
-    this.acceleration.add(force);
+    // Adding the mass
+    var newForce = force.mult(1 / this.r);
+    this.acceleration.add(newForce);
   };
 
   boundries = function () {

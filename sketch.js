@@ -13,7 +13,7 @@ function setup() {
     vehicles.push(new Vehicle(random(width), random(height), this.generation));
   }
 
-  for (var i = 0; i < conNum; i++) {
+  for (var i = 0; i < conNum * 2; i++) {
     foods.push(createVector(random(width), random(height)));
   }
 
@@ -23,7 +23,7 @@ function setup() {
 }
 
 function draw() {
-  background(150);
+  background(51);
   textSize(20);
   fill(255);
   text(`Population: ${this.vehicles.length}`, 10, height - 10);
