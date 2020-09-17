@@ -5,7 +5,7 @@ class Vehicle {
     this.pos = createVector(x, y);
     this.velocity = createVector(0, 0);
     this.acceleration = createVector(0, 0);
-    this.r = random(2, 5);
+    this.r = random(1, 3);
     this.maxSpeed = (1 / this.r) * 10;
     this.maxForce = random(0.1, 0.3);
     this.momentum = 1;
@@ -82,6 +82,10 @@ class Vehicle {
 
       if (d < this.maxSpeed && d < perception) {
         this.health += nutrition;
+        if (this.r < 5) {
+          this.r += 0.1;
+          this.maxSpeed = (1 / this.r) * 10;
+        }
         list.splice(i, 1);
       } else {
         if (d < minDist) {

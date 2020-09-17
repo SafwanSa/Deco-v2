@@ -40,7 +40,7 @@ function draw() {
   fill(255);
   text(`Generation: ${this.generation}`, 400, height - 10);
 
-  if (random(1) < 0.8 / this.vehicles.length) {
+  if (random(1) < 1.2 / this.foods.length) {
     foods.push(createVector(random(width), random(height)));
   }
 
