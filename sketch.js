@@ -4,10 +4,12 @@ var poisons = [];
 var deaths = 0.0;
 var born = 0;
 var generation = 1;
-var conNum = 20;
+var conNum = 30;
+var debug;
+var speed = 1;
 
 function setup() {
-  createCanvas(600, 600);
+  createCanvas(1080, 720);
 
   for (var i = 0; i < conNum; i++) {
     vehicles.push(new Vehicle(random(width), random(height), this.generation));
@@ -20,9 +22,13 @@ function setup() {
   for (var i = 0; i < conNum / 2; i++) {
     poisons.push(createVector(random(width), random(height)));
   }
+
+  debug = createCheckbox();
 }
 
 function draw() {
+  // let x = map(mouseX, 0, width, -200, 200);
+  // camera(x, 0, (height/2) / tan(PI/6), x, 0, 0, 0, 1, 0);
   background(51);
   textSize(20);
   fill(255);
@@ -40,11 +46,15 @@ function draw() {
   fill(255);
   text(`Generation: ${this.generation}`, 400, height - 10);
 
-  if (random(1) < 1.2 / this.foods.length) {
+  textSize(20);
+  fill(255);
+  text(`D/B Rate: ${(this.deaths / this.born).toFixed(2)}`, 600, height - 10);
+
+  if (random(1) < 5 / this.foods.length) {
     foods.push(createVector(random(width), random(height)));
   }
 
-  if (random(1) < 0.01) {
+  if (random(1) < 1 / this.foods.length) {
     poisons.push(createVector(random(width), random(height)));
   }
 
@@ -61,7 +71,7 @@ function draw() {
   }
 
   for (var i = vehicles.length - 1; i >= 0; i--) {
-    vehicles[i].behaviour(foods, poisons);
+    vehicles[i].behaviour(foods, poisons, this.vehicles);
     vehicles[i].boundries();
     vehicles[i].display();
     vehicles[i].update();

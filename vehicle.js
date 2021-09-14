@@ -5,14 +5,15 @@ class Vehicle {
     this.pos = createVector(x, y);
     this.velocity = createVector(0, 0);
     this.acceleration = createVector(0, 0);
-    this.r = random(1, 3);
+    this.r = random(2, 3);
     this.maxSpeed = (1 / this.r) * 10;
     this.maxForce = random(0.1, 0.3);
     this.momentum = 1;
     this.health = 1;
-    this.dna = [];
+    this.dna;
 
     if (dna === undefined) {
+      this.dna = [];
       // Food Weight
       this.dna[0] = random(-2, 2);
       // Poison Weight
@@ -23,6 +24,7 @@ class Vehicle {
       this.dna[3] = random(0, 100);
     } else {
       // Mutation
+      this.dna = [];
       this.dna[0] = dna[0];
       if (random(1) < mr) {
         this.dna[0] += random(-0.1, 0.1);
@@ -47,7 +49,7 @@ class Vehicle {
 
   update = function () {
     // Decrease the health
-    this.health -= 0.01 * (1 / this.r);
+    this.health -= 0.008 * (1 / this.r);
 
     // Accelerate
     this.velocity.add(this.acceleration);
@@ -62,7 +64,21 @@ class Vehicle {
     this.acceleration.mult(0);
   };
 
-  behaviour = function (good, bad) {
+  behaviour = function (good, bad, vehicles) {
+    for (var i = vehicles.length - 1; i >= 0; i--) {
+      var d = this.pos.dist(vehicles[i].pos);
+      var min = Infinity;
+      var closest = null;
+      if (d < min && this !== vehicles[i]) {
+        min = d;
+        closest = vehicles[i];
+      }
+    }
+    if (closest !== null && min < this.maxSpeed) {
+      console.log(min);
+      this.health -= 1;
+    }
+
     var steerG = this.eat(good, 0.2, this.dna[2]);
     var steerB = this.eat(bad, -0.8, this.dna[3]);
 
@@ -80,13 +96,13 @@ class Vehicle {
     for (var i = list.length - 1; i >= 0; i--) {
       var d = list[i].dist(this.pos);
 
-      if (d < this.maxSpeed && d < perception) {
+      if (d < this.maxSpeed * 2 && d < perception) {
         this.health += nutrition;
+        list.splice(i, 1);
         if (this.r < 5) {
           this.r += 0.1;
           this.maxSpeed = (1 / this.r) * 10;
         }
-        list.splice(i, 1);
       } else {
         if (d < minDist) {
           minDist = d;
@@ -167,6 +183,18 @@ class Vehicle {
     translate(this.pos.x, this.pos.y);
     rotate(angle);
 
+    if (debug.checked()) {
+      strokeWeight(3);
+      stroke(0, 255, 0);
+      noFill();
+      line(0, 0, 0, -this.dna[0] * 25);
+      strokeWeight(2);
+      ellipse(0, 0, this.dna[2] * 2);
+      stroke(255, 0, 0);
+      line(0, 0, 0, -this.dna[1] * 25);
+      ellipse(0, 0, this.dna[3] * 2);
+    }
+
     var gr = color(0, 255, 0);
     var rd = color(255, 0, 0);
     var col = lerpColor(rd, gr, this.health);
@@ -182,6 +210,7 @@ class Vehicle {
     vertex(0, -this.r * 2);
     vertex(-this.r, this.r * 2);
     vertex(this.r, this.r * 2);
+    ellipse(0, this.r * 2, this.r * 2, this.r * 2);
     endShape(CLOSE);
 
     pop();
